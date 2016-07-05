@@ -3,9 +3,11 @@ FROM ubuntu:14.04
 ENV IIBTAR 10.0.0-IIB-LINUXX64-FP0004.tar.gz
 ENV MQTAR WS_MQ_V8.0.0.4_LINUX_ON_X86_64_IM.tar.gz
 
-#VOLUME ["/var/mqsi"]
+VOLUME ["/workspace"]
 
-RUN apt-get update && apt-get install -y rpm
+# iib toolkit requires XULRunner that comes with firefox.
+# TODO narrow down to minimun requirement
+RUN apt-get update && apt-get install -y rpm firefox
 
 ADD ${IIBTAR} ${MQTAR} /
 COPY setup.sh start.sh /
@@ -23,6 +25,8 @@ RUN MQServer/mqlicense.sh -accept && \
     MQServer/MQSeriesSamples-*.rpm \
     MQServer/MQSeriesSDK-*.rpm \
     MQServer/MQSeriesServer-*.rpm
+
+RUN rm -rf /EAsmbl_image /MQServer
 
 RUN usermod -a -G mqm root
 
